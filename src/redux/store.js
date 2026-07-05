@@ -1,0 +1,24 @@
+import { configureStore } from "@reduxjs/toolkit";
+import authReducer from "./slices/authSlice";
+import cartReducer from "./slices/cartSlice";
+import orderReducer from "./slices/orderSlice";
+import walletReducer from "./slices/walletSlice";
+import productReducer from "./slices/productSlice";
+import uiReducer from "./slices/uiSlice";
+
+export const store = configureStore({
+  reducer: {
+    auth: authReducer,
+    cart: cartReducer,
+    orders: orderReducer,
+    wallet: walletReducer,
+    product: productReducer,
+    ui: uiReducer,
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
+});
+
+export default store;

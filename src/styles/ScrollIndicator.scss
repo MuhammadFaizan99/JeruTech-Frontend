@@ -1,0 +1,181 @@
+@use "variables" as *;
+@use "breakpoints" as *;
+
+.scroll-indicator {
+  position: absolute;
+  bottom: clamp(0.5rem, 2vw, 1rem);
+  left: 50%;
+  z-index: 12;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.75rem 0.35rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transform: translateX(-50%) translateY(12px);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.45s ease,
+    transform 0.45s ease,
+    visibility 0.45s ease;
+  visibility: hidden;
+
+  &--visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    visibility: visible;
+    pointer-events: auto;
+    animation: scroll-indicator-fade-in 0.9s ease 0.6s both;
+  }
+
+  &__glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 80px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.35) 0%, transparent 70%);
+    animation: scroll-indicator-pulse 2.5s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  &__mouse {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: scroll-indicator-bounce 2.2s ease-in-out infinite;
+  }
+
+  &__mouse-body {
+    position: relative;
+    display: block;
+    width: clamp(22px, 4vw, 26px);
+    height: clamp(34px, 6vw, 40px);
+    border-radius: 14px;
+    border: 2px solid rgba(147, 197, 253, 0.55);
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow:
+      0 0 20px rgba(59, 130, 246, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  &__wheel {
+    position: absolute;
+    top: 7px;
+    left: 50%;
+    width: 4px;
+    height: 8px;
+    margin-left: -2px;
+    border-radius: 100px;
+    background: linear-gradient(180deg, #60a5fa, #3b82f6);
+    box-shadow: 0 0 8px rgba(96, 165, 250, 0.9);
+    animation: scroll-indicator-wheel 1.6s ease-in-out infinite;
+  }
+
+  &__arrow {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #93c5fd;
+    font-size: clamp(0.85rem, 2vw, 1rem);
+    animation: scroll-indicator-arrow 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.5));
+  }
+
+  &:hover {
+    .scroll-indicator__mouse-body {
+      border-color: rgba(96, 165, 250, 0.75);
+      box-shadow:
+        0 0 28px rgba(59, 130, 246, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgba(96, 165, 250, 0.6);
+    outline-offset: 4px;
+    border-radius: $radius-md;
+  }
+
+  @include tablet-down {
+    bottom: 0.35rem;
+    gap: 0.25rem;
+    padding: 0.4rem 0.55rem 0.25rem;
+  }
+
+  @include mobile {
+    transform: translateX(-50%) translateY(8px) scale(0.92);
+
+    &--visible {
+      transform: translateX(-50%) translateY(0) scale(0.92);
+    }
+  }
+}
+
+@keyframes scroll-indicator-fade-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes scroll-indicator-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+@keyframes scroll-indicator-wheel {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.35;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scroll-indicator-arrow {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(4px);
+    opacity: 1;
+  }
+}
+
+@keyframes scroll-indicator-pulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  50% {
+    opacity: 0.75;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}

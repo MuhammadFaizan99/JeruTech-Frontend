@@ -1,0 +1,349 @@
+@use "variables" as *;
+
+.admin-page {
+  .admin-page__signout {
+    width: 100%;
+    margin-top: 0.35rem;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+    color: #fca5a5;
+
+    &:hover {
+      color: #fecaca;
+      background: rgba(239, 68, 68, 0.12);
+    }
+  }
+}
+
+.admin-orders {
+  &__customer {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.82rem;
+    color: $color-text-muted;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(59, 130, 246, 0.12);
+  }
+
+  &__approve-btn {
+    padding: 0.65rem 1rem;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  &__cancel-btn {
+    padding: 0.65rem 1rem;
+    border-radius: 999px;
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    background: rgba(239, 68, 68, 0.12);
+    color: #fca5a5;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  &__status-control select {
+    min-width: 180px;
+    padding: 0.65rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    background: rgba(15, 23, 42, 0.75);
+    color: #e2e8f0;
+    font: inherit;
+  }
+}
+
+.admin-wallet {
+  &__summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  &__card {
+    padding: 1rem 1.1rem;
+    border-radius: $radius-lg;
+    border: 1px solid rgba(59, 130, 246, 0.18);
+    background: rgba(15, 23, 42, 0.55);
+
+    strong {
+      display: block;
+      margin: 0.35rem 0;
+      font-size: 1.45rem;
+      color: #f8fafc;
+    }
+
+    p {
+      margin: 0;
+      color: $color-text-muted;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    &--admin {
+      border-color: rgba(16, 185, 129, 0.28);
+      background: linear-gradient(
+        135deg,
+        rgba(6, 78, 59, 0.35),
+        rgba(15, 23, 42, 0.65)
+      );
+    }
+  }
+
+  &__label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #93c5fd;
+  }
+
+  &__fund-form,
+  &__list {
+    margin-top: 1.25rem;
+    padding: 1rem;
+    border-radius: $radius-lg;
+    border: 1px solid rgba(59, 130, 246, 0.18);
+    background: rgba(15, 23, 42, 0.45);
+
+    h3 {
+      margin: 0 0 0.85rem;
+      color: #f8fafc;
+    }
+  }
+
+  &__fund-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+
+    select,
+    input {
+      width: 100%;
+      padding: 0.75rem 0.85rem;
+      border-radius: $radius-md;
+      border: 1px solid rgba(59, 130, 246, 0.22);
+      background: rgba(15, 23, 42, 0.75);
+      color: #f8fafc;
+      font: inherit;
+    }
+  }
+
+  &__list ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  &__list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 0.95rem;
+    border-radius: $radius-md;
+    background: rgba(30, 41, 59, 0.55);
+
+    div {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    span {
+      color: $color-text-muted;
+      font-size: 0.82rem;
+    }
+
+    strong {
+      color: #f8fafc;
+    }
+  }
+
+  &__role {
+    display: inline-flex;
+    width: fit-content;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.18);
+    color: #93c5fd !important;
+    text-transform: capitalize;
+  }
+}
+
+.dashboard-wallet {
+  &__balance-card {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 1.1rem 1.2rem;
+    border-radius: $radius-xl;
+    border: 1px solid rgba(59, 130, 246, 0.22);
+    background: linear-gradient(
+      135deg,
+      rgba(30, 58, 138, 0.35),
+      rgba(15, 23, 42, 0.65)
+    );
+    margin-bottom: 1.25rem;
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    background: rgba(59, 130, 246, 0.18);
+    color: #93c5fd;
+    font-size: 1.35rem;
+  }
+
+  &__label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #93c5fd;
+  }
+
+  &__balance-card strong {
+    display: block;
+    margin: 0.25rem 0;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    color: #f8fafc;
+  }
+
+  &__balance-card p {
+    margin: 0;
+    color: $color-text-muted;
+    font-size: 0.88rem;
+  }
+
+  &__transactions {
+    padding: 1rem;
+    border-radius: $radius-lg;
+    border: 1px solid rgba(59, 130, 246, 0.18);
+    background: rgba(15, 23, 42, 0.45);
+
+    h3 {
+      margin: 0 0 0.85rem;
+      color: #f8fafc;
+    }
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+  }
+
+  &__transaction {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 0.95rem;
+    border-radius: $radius-md;
+    background: rgba(30, 41, 59, 0.55);
+
+    div:first-child {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    strong {
+      color: #f8fafc;
+    }
+
+    span {
+      color: $color-text-muted;
+      font-size: 0.82rem;
+    }
+  }
+
+  &__category {
+    display: inline-flex;
+    width: fit-content;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, 0.14);
+    color: #93c5fd !important;
+    text-transform: capitalize;
+  }
+
+  &__amounts {
+    text-align: right;
+  }
+
+  &__amount {
+    display: block;
+    font-weight: 700;
+
+    &--credit {
+      color: #34d399;
+    }
+
+    &--debit {
+      color: #f87171;
+    }
+  }
+
+  &__balance-after {
+    font-size: 0.78rem !important;
+  }
+
+  &__empty {
+    margin: 0;
+    color: $color-text-muted;
+  }
+}
+
+.dashboard-panel__order-status--pending {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fbbf24;
+}
+
+.dashboard-panel__order-status--processing {
+  background: rgba(59, 130, 246, 0.18);
+  color: #93c5fd;
+}
+
+.dashboard-panel__order-status--shipped,
+.dashboard-panel__order-status--delivered {
+  background: rgba(16, 185, 129, 0.18);
+  color: #6ee7b7;
+}
+
+.dashboard-panel__order-status--cancelled {
+  background: rgba(239, 68, 68, 0.18);
+  color: #fca5a5;
+}

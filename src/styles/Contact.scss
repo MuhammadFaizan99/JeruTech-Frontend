@@ -1,0 +1,282 @@
+@use "variables" as *;
+@use "breakpoints" as *;
+
+.contact-page {
+  width: 100%;
+  overflow-x: hidden;
+
+  &__header {
+    @include page-container-narrow;
+    padding-top: clamp(5rem, 10vw, 6.5rem);
+    padding-bottom: clamp(1rem, 3vw, 1.25rem);
+    text-align: center;
+
+    h1 {
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      font-weight: 800;
+      margin: 0 0 0.5rem;
+      background: linear-gradient(135deg, #f8fafc, #93c5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    p {
+      margin: 0 auto;
+      max-width: min(520px, 92vw);
+      color: $color-text-secondary;
+      font-size: clamp(0.875rem, 2vw, 0.95rem);
+    }
+  }
+
+  &__body {
+    @include page-container-narrow;
+    max-width: min(1100px, 100%);
+    padding-bottom: clamp(2rem, 5vw, 2.5rem);
+  }
+
+  &__layout {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: clamp(1rem, 3vw, 1.25rem);
+    align-items: start;
+
+    @include tablet-down {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  &__form-col,
+  &__sidebar-col {
+    min-width: 0;
+  }
+
+  &__form-card {
+    padding: clamp(1.15rem, 3vw, 1.5rem);
+    border-radius: $radius-lg;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(59, 130, 246, 0.28);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+
+    h2 {
+      margin: 0 0 0.35rem;
+      font-size: clamp(1rem, 2.5vw, 1.15rem);
+      font-weight: 700;
+      color: $color-text-primary;
+    }
+
+    .subtitle {
+      margin: 0 0 1.15rem;
+      font-size: clamp(0.8rem, 2vw, 0.85rem);
+      color: $color-text-muted;
+      line-height: 1.5;
+    }
+  }
+
+  &__form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+
+    .contact-field.full-width,
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    @include mobile {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  &__submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    max-width: 100%;
+    padding: clamp(0.6rem, 2vw, 0.65rem) clamp(1rem, 3vw, 1.35rem);
+    font-size: clamp(0.85rem, 2vw, 0.9rem);
+    font-weight: 600;
+    color: #fff;
+    border: none;
+    border-radius: 100px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    box-shadow: 0 4px 18px rgba(37, 99, 235, 0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    white-space: nowrap;
+
+    @include sm-mobile {
+      width: 100%;
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(59, 130, 246, 0.5);
+    }
+  }
+
+  &__sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+
+  &__whatsapp {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: clamp(0.75rem, 2vw, 0.9rem) clamp(0.85rem, 2vw, 1rem);
+    border-radius: $radius-md;
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.12), rgba(15, 23, 42, 0.7));
+    border: 1px solid rgba(34, 197, 94, 0.3);
+
+    .wa-icon {
+      font-size: clamp(1.4rem, 4vw, 1.75rem);
+      color: #22c55e;
+      flex-shrink: 0;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: clamp(0.85rem, 2vw, 0.9rem);
+      font-weight: 700;
+      color: $color-text-primary;
+    }
+
+    p {
+      margin: 0.15rem 0 0;
+      font-size: clamp(0.7rem, 1.8vw, 0.75rem);
+      color: $color-text-muted;
+      line-height: 1.45;
+    }
+
+    a {
+      display: inline-block;
+      margin-top: 0.45rem;
+      font-size: clamp(0.72rem, 1.8vw, 0.78rem);
+      font-weight: 600;
+      color: #4ade80;
+      text-decoration: none;
+      word-break: break-word;
+
+      &:hover {
+        color: #86efac;
+      }
+    }
+  }
+
+  &__cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+
+    @include sm-mobile {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  &__info-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 88px;
+    height: 100%;
+    padding: clamp(0.75rem, 2vw, 0.85rem);
+    border-radius: $radius-md;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(59, 130, 246, 0.18);
+
+    .icon {
+      font-size: 1.1rem;
+      color: #3b82f6;
+      margin-bottom: 0.35rem;
+      flex-shrink: 0;
+    }
+
+    h4 {
+      margin: 0 0 0.25rem;
+      font-size: clamp(0.68rem, 1.6vw, 0.75rem);
+      font-weight: 600;
+      color: $color-text-muted;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    p,
+    a {
+      margin: 0;
+      font-size: clamp(0.75rem, 1.8vw, 0.8rem);
+      line-height: 1.4;
+      color: $color-text-secondary;
+      text-decoration: none;
+      word-break: break-word;
+    }
+
+    a:hover {
+      color: #60a5fa;
+    }
+  }
+
+  &__map {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: clamp(120px, 25vw, 140px);
+    padding: 1rem;
+    border-radius: $radius-md;
+    background: linear-gradient(135deg, rgba(30, 58, 138, 0.25), rgba(15, 23, 42, 0.75));
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    text-align: center;
+
+    .map-pin {
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      color: #3b82f6;
+    }
+
+    p {
+      margin: 0.5rem 0 0;
+      font-size: clamp(0.72rem, 1.8vw, 0.78rem);
+      color: $color-text-muted;
+      line-height: 1.4;
+      padding: 0 0.25rem;
+    }
+  }
+}
+
+.contact-field {
+  width: 100%;
+  min-width: 0;
+
+  .MuiOutlinedInput-root {
+    color: #f8fafc;
+    background: rgba(15, 23, 42, 0.45);
+    border-radius: $radius-sm;
+    font-size: clamp(0.85rem, 2vw, 0.9rem);
+
+    fieldset {
+      border-color: rgba(59, 130, 246, 0.25);
+    }
+
+    &:hover fieldset {
+      border-color: rgba(59, 130, 246, 0.4);
+    }
+
+    &.Mui-focused fieldset {
+      border-color: #3b82f6;
+    }
+  }
+
+  .MuiInputLabel-root {
+    color: #94a3b8;
+    font-size: clamp(0.85rem, 2vw, 0.9rem);
+
+    &.Mui-focused {
+      color: #60a5fa;
+    }
+  }
+}

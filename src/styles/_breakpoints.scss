@@ -1,0 +1,140 @@
+// JeruTech responsive breakpoints
+// Desktop: 1440px+
+// Laptop: 1024px – 1439px
+// Tablet: 768px – 1023px
+// Large mobile: 481px – 767px
+// Small mobile: 320px – 480px
+
+$bp-desktop: 1440px;
+$bp-laptop-min: 1024px;
+$bp-laptop-max: 1439px;
+$bp-tablet-min: 768px;
+$bp-tablet-max: 1023px;
+$bp-lg-mobile-min: 481px;
+$bp-lg-mobile-max: 767px;
+$bp-sm-mobile-max: 480px;
+
+$container-max: 1320px;
+$container-narrow: 1200px;
+
+$container-padding-desktop: 1.5rem;
+$container-padding-tablet: 1.25rem;
+$container-padding-mobile: 1rem;
+$container-padding-sm: 0.875rem;
+
+// Legacy aliases (used across existing SCSS)
+$breakpoint-sm: $bp-lg-mobile-min;
+$breakpoint-md: $bp-tablet-min;
+$breakpoint-lg: $bp-laptop-min;
+$breakpoint-xl: $container-narrow;
+
+@mixin desktop {
+  @media (min-width: $bp-desktop) {
+    @content;
+  }
+}
+
+@mixin laptop {
+  @media (min-width: $bp-laptop-min) and (max-width: $bp-laptop-max) {
+    @content;
+  }
+}
+
+@mixin laptop-up {
+  @media (min-width: $bp-laptop-min) {
+    @content;
+  }
+}
+
+@mixin laptop-down {
+  @media (max-width: $bp-laptop-max) {
+    @content;
+  }
+}
+
+@mixin tablet {
+  @media (min-width: $bp-tablet-min) and (max-width: $bp-tablet-max) {
+    @content;
+  }
+}
+
+@mixin tablet-up {
+  @media (min-width: $bp-tablet-min) {
+    @content;
+  }
+}
+
+@mixin tablet-down {
+  @media (max-width: $bp-tablet-max) {
+    @content;
+  }
+}
+
+@mixin lg-mobile {
+  @media (min-width: $bp-lg-mobile-min) and (max-width: $bp-lg-mobile-max) {
+    @content;
+  }
+}
+
+@mixin mobile {
+  @media (max-width: $bp-lg-mobile-max) {
+    @content;
+  }
+}
+
+@mixin sm-mobile {
+  @media (max-width: $bp-sm-mobile-max) {
+    @content;
+  }
+}
+
+// Product listing grid: 4 / 3 / 2 / 1
+@mixin product-grid {
+  display: grid;
+  gap: 1.25rem;
+  width: 100%;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  @media (max-width: $bp-laptop-max) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (max-width: $bp-tablet-max) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  @media (max-width: $bp-lg-mobile-max) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+}
+
+@mixin page-container {
+  width: 100%;
+  max-width: $container-max;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: $container-padding-desktop;
+  padding-right: $container-padding-desktop;
+
+  @include laptop-down {
+    padding-left: $container-padding-tablet;
+    padding-right: $container-padding-tablet;
+  }
+
+  @include mobile {
+    padding-left: $container-padding-mobile;
+    padding-right: $container-padding-mobile;
+  }
+
+  @include sm-mobile {
+    padding-left: $container-padding-sm;
+    padding-right: $container-padding-sm;
+  }
+}
+
+@mixin page-container-narrow {
+  @include page-container;
+  max-width: $container-narrow;
+}
