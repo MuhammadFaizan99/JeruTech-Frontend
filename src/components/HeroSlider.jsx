@@ -17,7 +17,6 @@ import {
   FiTag,
 } from "react-icons/fi";
 import { heroSlides as fallbackHeroSlides } from "../data/slides";
-import api from "../api";
 import ScrollIndicator from "./ScrollIndicator";
 import TextReveal from "./effects/TextReveal";
 import MagneticButton from "./effects/MagneticButton";
@@ -52,27 +51,8 @@ const HeroSlider = () => {
   const [progressKey, setProgressKey] = useState(0);
 
   useEffect(() => {
-    let isMounted = true;
-
-    const loadSlides = async () => {
-      try {
-        const { data } = await api.get("/homepage-banners");
-        if (isMounted && Array.isArray(data?.data) && data.data.length > 0) {
-          setSlides(normalizeSlides(data.data));
-          setCurrent(0);
-        }
-      } catch (error) {
-        if (isMounted) {
-          setSlides(fallbackHeroSlides);
-        }
-      }
-    };
-
-    loadSlides();
-
-    return () => {
-      isMounted = false;
-    };
+    setSlides(fallbackHeroSlides);
+    setCurrent(0);
   }, []);
 
   useEffect(() => {

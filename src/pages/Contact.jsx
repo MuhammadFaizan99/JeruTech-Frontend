@@ -5,8 +5,10 @@ import { HiMail, HiPhone, HiLocationMarker, HiOfficeBuilding } from "react-icons
 import ScrollReveal from "../components/effects/ScrollReveal";
 import FloatingInput from "../components/effects/FloatingInput";
 import LoadingButton from "../components/LoadingButton";
+import api from "../api";
 import {
   showSuccessToast,
+  showErrorToast,
   showWarningToast,
   showLoadingToast,
   updateLoadingToast,
@@ -40,6 +42,7 @@ const Contact = () => {
     phone: "",
     email: "",
     message: "",
+    website: "",
   });
   const [submitting, setSubmitting] = useState(false);
 
@@ -58,11 +61,28 @@ const Contact = () => {
     setSubmitting(true);
     const toastId = showLoadingToast("Sending your message…");
 
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    try {
+      const response = await api.post("/contact", {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        message: formData.message.trim(),
+        website: formData.website,
+      });
 
-    updateLoadingToast(toastId, `Thank you, ${formData.name}! We will contact you soon.`, "success");
-    setFormData({ name: "", phone: "", email: "", message: "" });
-    setSubmitting(false);
+      updateLoadingToast(toastId, response.data?.message || `Thank you, ${formData.name}! We will contact you soon.`, "success");
+      showSuccessToast("Your message was delivered successfully.");
+      setFormData({ name: "", phone: "", email: "", message: "", website: "" });
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Unable to send your message right now.";
+      updateLoadingToast(toastId, message, "error");
+      showErrorToast(message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -99,7 +119,6 @@ const Contact = () => {
                     type="tel"
                     value={formData.phone}
                     onChange={handleChange}
-                    required
                   />
                   <div className="full-width">
                     <FloatingInput
@@ -122,6 +141,14 @@ const Contact = () => {
                       rows={4}
                     />
                   </div>
+                  <input
+                    type="text"
+                    name="website"
+                    value={formData.website || ""}
+                    onChange={handleChange}
+                    style={{ display: "none" }}
+                    autoComplete="off"
+                  />
                   <div className="full-width">
                     <LoadingButton
                       type="submit"

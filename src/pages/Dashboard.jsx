@@ -7,6 +7,7 @@ import {
   FiHeart,
   FiSettings,
   FiCreditCard,
+  FiBell,
 } from "react-icons/fi";
 import ScrollReveal from "../components/effects/ScrollReveal";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
@@ -17,6 +18,7 @@ import Orders from "./dashboard/Orders";
 import Wallet from "./dashboard/Wallet";
 import Favourites from "./dashboard/Favourites";
 import Settings from "./dashboard/Settings";
+import Notifications from "./dashboard/Notifications";
 import "../styles/Dashboard.scss";
 
 const menuItems = [
@@ -28,6 +30,7 @@ const menuItems = [
   },
   { label: "Orders", path: "/dashboard/orders", icon: FiShoppingBag },
   { label: "Wallet", path: "/dashboard/wallet", icon: FiCreditCard },
+  { label: "Notifications", path: "/dashboard/notifications", icon: FiBell },
   { label: "Favourites", path: "/dashboard/favourites", icon: FiHeart },
   { label: "Settings", path: "/dashboard/settings", icon: FiSettings },
 ];
@@ -99,6 +102,7 @@ const Dashboard = () => {
                 <Route path="products-purchased" element={<ProductsPurchased />} />
                 <Route path="orders" element={<Orders />} />
                 <Route path="wallet" element={<Wallet />} />
+                <Route path="notifications" element={<Notifications />} />
                 <Route path="favourites" element={<Favourites />} />
                 <Route path="settings" element={<Settings />} />
                 <Route path="*" element={<Navigate to="/dashboard" replace />} />

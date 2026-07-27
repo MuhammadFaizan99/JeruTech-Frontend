@@ -1,9 +1,12 @@
-import { useState, useEffect } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Drawer from "@mui/material/Drawer";
 import { HiMenuAlt3, HiX } from "react-icons/hi";
-import { FiShoppingCart, FiLayout } from "react-icons/fi";
+import { FiShoppingCart, FiLayout, FiBell } from "react-icons/fi";
+import NotificationPopover from "./NotificationPopover";
+import api from "../api";
+import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { fetchProfile } from "../redux/slices/authSlice";
 import UserMenu from "./UserMenu";
@@ -23,7 +26,13 @@ const Navbar = () => {
 
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [loadingNotifications, setLoadingNotifications] = useState(false);
+  const bellButtonRef = useRef(null);
 
+  const navigate = useNavigate();
   const cartCount = useAppSelector((state) => state.cart.cartCount);
   const { isAuthenticated, token, user } = useAppSelector((state) => state.auth);
 
@@ -32,6 +41,45 @@ const Navbar = () => {
       dispatch(fetchProfile());
     }
   }, [dispatch, token, user]);
+
+  // fetch notifications when the notifications panel opens
+  useEffect(() => {
+    let mounted = true;
+    const fetchNotifications = async () => {
+      if (!token) return;
+      setLoadingNotifications(true);
+      try {
+        const res = await api.get("/notifications", {
+          params: {
+            page: 1,
+            limit: 5,
+          },
+        });
+        const data = res.data?.data || {};
+        if (!mounted) return;
+        setNotifications(data.notifications || []);
+        setUnreadCount(data.unreadCount || 0);
+      } catch (_err) {
+        // no-op
+      } finally {
+        if (mounted) setLoadingNotifications(false);
+      }
+    };
+
+    if (notificationsOpen) fetchNotifications();
+
+    return () => {
+      mounted = false;
+    };
+  }, [notificationsOpen, token]);
+
+  // Wire real-time notifications via Socket.IO
+  useRealtimeNotifications({
+    onNotification: (payload) => {
+      setNotifications((prev) => [payload, ...(prev || [])]);
+      setUnreadCount((c) => (typeof c === 'number' ? c + 1 : 1));
+    },
+  });
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -50,6 +98,38 @@ const Navbar = () => {
 
   const closeMobileMenu = () => setMobileOpen(false);
   const cartBadge = cartCount > 99 ? "99+" : cartCount;
+
+  const markNotificationsAsRead = async (notificationIds = []) => {
+    if (!notificationIds.length) return;
+    try {
+      await api.put("/notifications/read", { notificationIds });
+      setNotifications((current) => current.map((item) => (notificationIds.includes(item._id) ? { ...item, isRead: true } : item)));
+      setUnreadCount((current) => Math.max(0, current - notificationIds.length));
+    } catch (_error) {
+      // no-op
+    }
+  };
+
+  const markAllNotificationsRead = async () => {
+    const unreadIds = notifications.filter((item) => !item.isRead).map((item) => item._id);
+    if (!unreadIds.length) return;
+    await markNotificationsAsRead(unreadIds);
+  };
+
+  const clearNotifications = async () => {
+    try {
+      await api.delete("/notifications");
+      setNotifications([]);
+      setUnreadCount(0);
+    } catch (_error) {
+      // no-op
+    }
+  };
+
+  const handleNavigate = (path) => {
+    if (!path) return;
+    navigate(path);
+  };
 
   return (
     <header
@@ -106,6 +186,40 @@ const Navbar = () => {
               </>
             )}
 
+            {isAuthenticated && (
+              <div className="jerutech-nav__bell-wrapper">
+                <button
+                  ref={bellButtonRef}
+                  type="button"
+                  className="jerutech-nav__icon-btn"
+                  aria-label="Notifications"
+                  onClick={() => setNotificationsOpen((v) => !v)}
+                >
+                  <FiBell size={20} />
+                  {unreadCount > 0 && (
+                    <span className="jerutech-nav__cart-badge" aria-live="polite">
+                      {unreadCount > 99 ? "99+" : unreadCount}
+                    </span>
+                  )}
+                </button>
+
+                {notificationsOpen && (
+                  <NotificationPopover
+                    open={notificationsOpen}
+                    onClose={() => setNotificationsOpen(false)}
+                    notifications={notifications}
+                    unreadCount={unreadCount}
+                    onMarkOneRead={markNotificationsAsRead}
+                    onMarkAllRead={markAllNotificationsRead}
+                    onClearAll={clearNotifications}
+                    onViewAll={() => handleNavigate("/dashboard/notifications")}
+                    onNavigate={handleNavigate}
+                    loadingNotifications={loadingNotifications}
+                    anchorRef={bellButtonRef}
+                  />
+                )}
+              </div>
+            )}
             <UserMenu />
           </div>
 
@@ -162,6 +276,19 @@ const Navbar = () => {
               <div className="mobile-drawer__actions">
                 {isAuthenticated && (
                   <>
+                    <button
+                      type="button"
+                      className="mobile-drawer__dashboard-link"
+                      onClick={() => {
+                        setNotificationsOpen((value) => !value);
+                        closeMobileMenu();
+                      }}
+                    >
+                      <FiBell size={18} />
+                      Notifications
+                      {unreadCount > 0 && <span className="jerutech-nav__cart-badge">{unreadCount > 99 ? "99+" : unreadCount}</span>}
+                    </button>
+
                     <Link
                       to="/dashboard"
                       className="mobile-drawer__dashboard-link"

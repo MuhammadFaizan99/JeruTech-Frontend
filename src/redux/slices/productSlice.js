@@ -1,11 +1,16 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { blogs } from "../../data/blogs";
 import api from "../../api";
+import { uploadFilesToS3 } from "../../utils/upload";
 
 const normalizeProduct = (product) => ({
   ...product,
   id: product._id || product.id,
-  images: product.images || (product.image ? [product.image] : []),
+  images: Array.isArray(product.images) && product.images.length
+    ? product.images.filter(Boolean)
+    : product.image
+      ? [product.image]
+      : [],
   company: product.company || product.name?.split(" ")[0] || "JeruTech",
 });
 
@@ -137,7 +142,17 @@ export const createProduct = createAsyncThunk(
   "product/createProduct",
   async (productData, { rejectWithValue }) => {
     try {
-      const res = await api.post("/products", productData);
+      const imageEntries = Array.isArray(productData.images)
+        ? productData.images
+        : productData.image
+          ? [productData.image]
+          : [];
+      const resolvedImages = await uploadFilesToS3({ files: imageEntries, folder: "products" });
+
+      const res = await api.post("/products", {
+        ...productData,
+        images: resolvedImages,
+      });
       return res.data.product;
     } catch (error) {
       return rejectWithValue(
@@ -151,7 +166,17 @@ export const updateProduct = createAsyncThunk(
   "product/updateProduct",
   async ({ id, productData }, { rejectWithValue }) => {
     try {
-      const res = await api.put(`/products/${id}`, productData);
+      const imageEntries = Array.isArray(productData.images)
+        ? productData.images
+        : productData.image
+          ? [productData.image]
+          : [];
+      const resolvedImages = await uploadFilesToS3({ files: imageEntries, folder: "products" });
+
+      const res = await api.put(`/products/${id}`, {
+        ...productData,
+        images: resolvedImages,
+      });
       return res.data.product;
     } catch (error) {
       return rejectWithValue(
@@ -222,8 +247,8 @@ const productSlice = createSlice({
         const payload = action.payload || {};
         const normalizedProducts = normalizeProducts(payload.data || []);
         state.products = normalizedProducts;
-        state.categories = payload.categories || [];
-        state.companies = payload.companies || getUniqueCompanies(normalizedProducts);
+        state.categories = (payload.categories || []).filter((value) => value !== "All");
+        state.companies = (payload.companies || getUniqueCompanies(normalizedProducts)).filter((value) => typeof value === "string" && value.trim());
         state.discountedProducts = normalizedProducts.filter(
           (product) => product.isDiscounted === true
         );
@@ -281,7 +306,7 @@ const productSlice = createSlice({
         const payload = action.payload || {};
         const normalizedProducts = normalizeProducts(payload.data || []);
         state.discountedProducts = normalizedProducts;
-        state.companies = payload.companies || getUniqueCompanies(normalizedProducts);
+        state.companies = (payload.companies || getUniqueCompanies(normalizedProducts)).filter((value) => typeof value === "string" && value.trim());
         state.discountedPagination = {
           currentPage: payload.pagination?.currentPage || payload.currentPage || 1,
           totalPages: payload.pagination?.totalPages || payload.totalPages || 1,
@@ -311,7 +336,7 @@ const productSlice = createSlice({
         const payload = action.payload || {};
         const normalizedProducts = normalizeProducts(payload.data || []);
         state.nonDiscountedProducts = normalizedProducts;
-        state.companies = payload.companies || getUniqueCompanies(normalizedProducts);
+        state.companies = (payload.companies || getUniqueCompanies(normalizedProducts)).filter((value) => typeof value === "string" && value.trim());
       })
       .addCase(fetchNonDiscountedProducts.rejected, (state, action) => {
         state.listLoading = false;
@@ -333,8 +358,8 @@ const productSlice = createSlice({
         const payload = action.payload || {};
         const normalizedProducts = normalizeProducts(payload.data || []);
         state.products = normalizedProducts;
-        state.categories = payload.categories || state.categories;
-        state.companies = payload.companies || getUniqueCompanies(normalizedProducts);
+        state.categories = (payload.categories || state.categories).filter((value) => value !== "All");
+        state.companies = (payload.companies || getUniqueCompanies(normalizedProducts)).filter((value) => typeof value === "string" && value.trim());
         state.discountedProducts = normalizedProducts.filter(
           (product) => product.isDiscounted === true
         );
