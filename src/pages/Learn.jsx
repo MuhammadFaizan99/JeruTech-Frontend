@@ -1,28 +1,74 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import BlogCard from "../components/BlogCard";
 import Pagination from "../components/Pagination";
 import ScrollReveal from "../components/effects/ScrollReveal";
 import { usePagination } from "../hooks/usePagination";
-import { useAppSelector } from "../redux/hooks";
-import { showInfoToast } from "../utils/toast";
+import api from "../api";
 import "../styles/Learn.scss";
 import "../styles/Pagination.scss";
 
-const openArticle = (title) => {
-  showInfoToast(`Opening: "${title}" — Full blog content coming soon!`);
-};
-
 const Learn = () => {
-  const blogs = useAppSelector((state) => state.product.blogs);
-  const featured = blogs.find((b) => b.featured) || blogs[0];
-  const trending = blogs.filter((b) => b.trending);
-  const listBlogs = useMemo(
-    () => blogs.filter((b) => b.id !== featured.id),
-    [blogs, featured.id]
-  );
+  const navigate = useNavigate();
+  const [blogs, setBlogs] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const itemsPerPage = 8;
-  const { currentPage, totalPages, paginatedItems, goToPage, totalItems } = usePagination(listBlogs, itemsPerPage);
+  useEffect(() => {
+    const loadBlogs = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const [blogsResponse, categoriesResponse] = await Promise.all([
+          api.get("/blogs"),
+          api.get("/categories?limit=100"),
+        ]);
+
+        const remoteBlogs = (blogsResponse.data?.blogs || []).map((blog) => ({
+          ...blog,
+          id: blog._id || blog.id,
+          title: blog.title,
+          description: (blog.description || "")
+            .replace(/<[^>]+>/g, " ")
+            .replace(/&nbsp;/g, " ")
+            .replace(/\s+/g, " ")
+            .trim()
+            .slice(0, 160),
+          image: blog.image,
+          date: blog.createdAt ? new Date(blog.createdAt).toLocaleDateString() : "Recently published",
+          tags: (blog.categories || []).map((category) => category.name),
+          slug: blog.slug,
+        }));
+
+        setBlogs(remoteBlogs);
+        setCategories([{ _id: "all", name: "All" }, ...(categoriesResponse.data?.categories || [])]);
+      } catch (err) {
+        setError(err.response?.data?.message || "Unable to load blogs right now.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadBlogs();
+  }, []);
+
+  const filteredBlogs = useMemo(() => {
+    if (!selectedCategory || selectedCategory === "all") {
+      return blogs;
+    }
+
+    return blogs.filter((blog) =>
+      (blog.categories || []).some((category) => {
+        const categoryId = category._id || category.id;
+        return categoryId === selectedCategory || category.name === selectedCategory;
+      })
+    );
+  }, [blogs, selectedCategory]);
+
+  const itemsPerPage = 6;
+  const { currentPage, totalPages, paginatedItems, goToPage, totalItems } = usePagination(filteredBlogs, itemsPerPage);
 
   return (
     <div className="page-wrapper learn-page">
@@ -37,60 +83,50 @@ const Learn = () => {
       </section>
 
       <section className="learn-page__body">
-        <div className="learn-page__layout">
-          <div className="learn-page__main">
-            <ScrollReveal direction="left">
-              <span className="learn-page__featured-label">Featured Article</span>
-              <BlogCard blog={featured} featured />
-            </ScrollReveal>
-
-            <ScrollReveal direction="up" delay={0.15}>
-              <h2 className="learn-page__section-title">Latest Articles</h2>
-            </ScrollReveal>
-
-            <div className="learn-page__grid" id="learn-list">
-              {paginatedItems.map((blog, index) => (
-                <BlogCard key={blog.id} blog={blog} index={index} />
-              ))}
-            </div>
-
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={totalItems}
-              itemsPerPage={itemsPerPage}
-              onPageChange={goToPage}
-              scrollTarget="#learn-list"
-            />
-          </div>
-
-          <aside className="learn-page__sidebar">
-            <ScrollReveal direction="right">
-              <div className="learn-page__tag-cloud">
-                <span className="blog-tag blog-tag--ai">AI</span>
-                <span className="blog-tag blog-tag--mobile">Mobile</span>
-                <span className="blog-tag blog-tag--laptop">Laptop</span>
-                <span className="blog-tag blog-tag--gadgets">Gadgets</span>
-              </div>
-              <h3 className="learn-page__sidebar-title">🔥 Trending Now</h3>
-              {trending.map((blog) => (
-                <div
-                  key={blog.id}
-                  className="trending-blog-item"
-                  onClick={() => openArticle(blog.title)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => e.key === "Enter" && openArticle(blog.title)}
-                >
-                  <img src={blog.image} alt={blog.title} />
-                  <div>
-                    <h6>{blog.title}</h6>
-                    <span>{blog.readTime}</span>
-                  </div>
+        <div className="learn-page__main">
+          {loading ? (
+            <div className="learn-page__status-card">Loading fresh blog posts…</div>
+          ) : error ? (
+            <div className="learn-page__status-card">{error}</div>
+          ) : (
+            <>
+              <ScrollReveal direction="up">
+                <div className="learn-page__filters" role="toolbar" aria-label="Blog categories">
+                  {categories.map((category) => (
+                    <button
+                      key={category._id || category.id || category.name}
+                      type="button"
+                      className={`learn-page__filter-chip${selectedCategory === (category._id || category.id || category.name) ? " learn-page__filter-chip--active" : ""}`}
+                      onClick={() => setSelectedCategory(category._id || category.id || category.name)}
+                    >
+                      {category.name}
+                    </button>
+                  ))}
                 </div>
-              ))}
-            </ScrollReveal>
-          </aside>
+              </ScrollReveal>
+
+              {filteredBlogs.length === 0 ? (
+                <div className="learn-page__status-card">No blogs found for this category yet.</div>
+              ) : (
+                <>
+                  <div className="learn-page__grid" id="learn-list">
+                    {paginatedItems.map((blog, index) => (
+                      <BlogCard key={blog.id} blog={blog} index={index} onReadMore={() => navigate(`/blogs/${blog.slug}`)} />
+                    ))}
+                  </div>
+
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    totalItems={totalItems}
+                    itemsPerPage={itemsPerPage}
+                    onPageChange={goToPage}
+                    scrollTarget="#learn-list"
+                  />
+                </>
+              )}
+            </>
+          )}
         </div>
       </section>
     </div>

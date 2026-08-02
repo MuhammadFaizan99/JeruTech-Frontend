@@ -40,9 +40,21 @@ const Favourites = () => {
         const legacyFavourites = getFavourites();
 
         if (legacyFavourites.length > 0) {
-          await Promise.all(
+          const syncResults = await Promise.allSettled(
             legacyFavourites.map((item) => api.post(`/favourites/${item.id}`)),
           );
+
+          const failedIds = legacyFavourites
+            .map((item, index) => ({ item, result: syncResults[index] }))
+            .filter(({ result }) => result.status === "rejected")
+            .map(({ item }) => item.id);
+
+          if (failedIds.length > 0) {
+            const cleanedFavourites = legacyFavourites.filter(
+              (item) => !failedIds.includes(item.id),
+            );
+            localStorage.setItem("jerutech_favourites", JSON.stringify(cleanedFavourites));
+          }
         }
 
         const response = await api.get("/favourites", {

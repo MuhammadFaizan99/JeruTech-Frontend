@@ -49,6 +49,41 @@
     position: relative;
   }
 
+  @include mobile {
+    &__body {
+      padding-top: clamp(4.25rem, 8vw, 5.25rem);
+    }
+
+    &__info {
+      padding: 1rem;
+    }
+
+    &__actions {
+      gap: 0.6rem;
+    }
+  }
+
+  @include sm-mobile {
+    &__gallery {
+      padding: 0.6rem;
+    }
+
+    &__deal-badge {
+      top: 0.75rem;
+      left: 0.75rem;
+    }
+
+    &__qty {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    &__qty-controls {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+
   &__gallery {
     position: relative;
     padding: clamp(0.75rem, 2vw, 1.25rem);

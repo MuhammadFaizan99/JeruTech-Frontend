@@ -17,6 +17,7 @@ import Home from "./pages/Home";
 import Products from "./pages/Products";
 import Discount from "./pages/Discount";
 import Learn from "./pages/Learn";
+import BlogDetails from "./pages/BlogDetails";
 import Contact from "./pages/Contact";
 import Cart from "./pages/Cart";
 import ContactSupportPage from "./pages/ContactSupportPage";
@@ -89,6 +90,14 @@ const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <Learn />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/blogs/:slug"
+          element={
+            <PageTransition>
+              <BlogDetails />
             </PageTransition>
           }
         />

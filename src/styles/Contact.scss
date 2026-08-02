@@ -179,6 +179,17 @@
     }
   }
 
+  @include sm-mobile {
+    &__form-card {
+      padding: 1rem;
+    }
+
+    &__whatsapp {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
   &__info-card {
     display: flex;
     flex-direction: column;

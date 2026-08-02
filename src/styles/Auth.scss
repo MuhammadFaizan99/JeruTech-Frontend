@@ -13,6 +13,10 @@
     width: 100%;
     max-width: 420px;
     padding: clamp(1.5rem, 4vw, 2.25rem);
+
+    @include sm-mobile {
+      padding: 1.25rem;
+    }
     border-radius: $radius-xl;
     background: rgba(15, 23, 42, 0.6);
     backdrop-filter: blur(20px);

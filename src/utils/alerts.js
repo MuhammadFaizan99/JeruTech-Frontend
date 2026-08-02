@@ -48,6 +48,8 @@ export const showConfirmModal = ({
         confirmVariant === "danger"
           ? "jerutech-swal__btn jerutech-swal__btn--danger"
           : "jerutech-swal__btn jerutech-swal__btn--confirm",
+      cancelButton: "jerutech-swal__btn jerutech-swal__btn--cancel",
+      actions: "jerutech-swal__actions",
     },
   }).then((result) => result.isConfirmed);
 

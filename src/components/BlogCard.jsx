@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import { FiArrowRight, FiClock } from "react-icons/fi";
 import TiltCard from "./effects/TiltCard";
-import { showInfoToast } from "../utils/toast";
 
 const tagClassMap = {
   AI: "blog-tag--ai",
@@ -23,9 +22,14 @@ const BlogTag = ({ tag }) => (
   <span className={`blog-tag ${tagClassMap[tag] || "blog-tag--default"}`}>{tag}</span>
 );
 
-const BlogCard = ({ blog, index = 0, featured = false }) => {
+const BlogCard = ({ blog, index = 0, featured = false, onReadMore }) => {
   const handleReadMore = () => {
-    showInfoToast(`Opening article: "${blog.title}" — Full blog content coming soon!`);
+    if (onReadMore) {
+      onReadMore();
+      return;
+    }
+
+    window.location.assign(`/blogs/${blog.slug || blog.id}`);
   };
 
   const tags = blog.tags || [blog.tag || "Tech"];
