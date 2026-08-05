@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useAppDispatch } from "../../redux/hooks";
 import { FiBell, FiInbox, FiCheckCircle, FiTrash2, FiRefreshCw } from "react-icons/fi";
 import Loader from "../../components/Loader";
 import Pagination from "../../components/Pagination";
 import api from "../../api";
+import { setUnreadCount } from "../../redux/slices/notificationSlice";
 import { showErrorToast } from "../../utils/toast";
 
 const Notifications = () => {
@@ -13,8 +15,9 @@ const Notifications = () => {
     totalItems: 0,
     limit: 8,
   });
-  const [unreadCount, setUnreadCount] = useState(0);
+  const [unreadCount, setUnreadCountState] = useState(0);
   const [loading, setLoading] = useState(false);
+  const dispatch = useAppDispatch();
 
   const loadNotifications = async (page = 1, limit = pagination.limit) => {
     setLoading(true);
@@ -35,7 +38,8 @@ const Notifications = () => {
         totalItems: data.pagination?.totalItems || 0,
         limit: data.pagination?.limit || limit,
       });
-      setUnreadCount(data.unreadCount || 0);
+      setUnreadCountState(data.unreadCount || 0);
+      dispatch(setUnreadCount(data.unreadCount || 0));
     } catch (error) {
       showErrorToast(error.response?.data?.message || "Failed to load notifications");
     } finally {
@@ -63,7 +67,8 @@ const Notifications = () => {
     try {
       await api.put("/notifications/read", { notificationIds: unreadIds });
       setNotifications((current) => current.map((item) => ({ ...item, isRead: true })));
-      setUnreadCount(0);
+      setUnreadCountState(0);
+      dispatch(setUnreadCount(0));
     } catch (error) {
       showErrorToast(error.response?.data?.message || "Failed to mark notifications read");
     }
@@ -74,7 +79,8 @@ const Notifications = () => {
       await api.delete("/notifications");
       setNotifications([]);
       setPagination((current) => ({ ...current, totalItems: 0, totalPages: 1, currentPage: 1 }));
-      setUnreadCount(0);
+      setUnreadCountState(0);
+      dispatch(setUnreadCount(0));
     } catch (error) {
       showErrorToast(error.response?.data?.message || "Failed to clear notifications");
     }

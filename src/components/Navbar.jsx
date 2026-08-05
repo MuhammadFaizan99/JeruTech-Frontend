@@ -9,6 +9,7 @@ import api from "../api";
 import { useRealtimeNotifications } from "../hooks/useRealtimeNotifications";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
 import { fetchProfile } from "../redux/slices/authSlice";
+import { decrementUnreadCount, incrementUnreadCount, setUnreadCount } from "../redux/slices/notificationSlice";
 import UserMenu from "./UserMenu";
 import "../styles/Navbar.scss";
 import logo from "../assets/logo.jpeg";
@@ -28,7 +29,7 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const unreadCount = useAppSelector((state) => state.notification.unreadCount);
   const [loadingNotifications, setLoadingNotifications] = useState(false);
   const bellButtonRef = useRef(null);
 
@@ -58,7 +59,7 @@ const Navbar = () => {
         const data = res.data?.data || {};
         if (!mounted) return;
         setNotifications(data.notifications || []);
-        setUnreadCount(data.unreadCount || 0);
+        dispatch(setUnreadCount(data.unreadCount || 0));
       } catch (_err) {
         // no-op
       } finally {
@@ -77,7 +78,7 @@ const Navbar = () => {
   useRealtimeNotifications({
     onNotification: (payload) => {
       setNotifications((prev) => [payload, ...(prev || [])]);
-      setUnreadCount((c) => (typeof c === 'number' ? c + 1 : 1));
+      dispatch(incrementUnreadCount(1));
     },
   });
 
@@ -103,8 +104,13 @@ const Navbar = () => {
     if (!notificationIds.length) return;
     try {
       await api.put("/notifications/read", { notificationIds });
-      setNotifications((current) => current.map((item) => (notificationIds.includes(item._id) ? { ...item, isRead: true } : item)));
-      setUnreadCount((current) => Math.max(0, current - notificationIds.length));
+      setNotifications((current) => {
+        const unreadToMark = current.filter((item) => !item.isRead && notificationIds.includes(item._id)).length;
+        if (unreadToMark > 0) {
+          dispatch(decrementUnreadCount(unreadToMark));
+        }
+        return current.map((item) => (notificationIds.includes(item._id) ? { ...item, isRead: true } : item));
+      });
     } catch (_error) {
       // no-op
     }
@@ -120,7 +126,7 @@ const Navbar = () => {
     try {
       await api.delete("/notifications");
       setNotifications([]);
-      setUnreadCount(0);
+      dispatch(setUnreadCount(0));
     } catch (_error) {
       // no-op
     }

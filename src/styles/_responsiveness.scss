@@ -1,0 +1,113 @@
+@use "variables" as *;
+@use "breakpoints" as *;
+
+// Global responsive fallbacks for page layouts and common components.
+
+.page-header,
+.section-header-premium,
+.page-header-premium {
+  @include mobile {
+    padding-left: $container-padding-mobile;
+    padding-right: $container-padding-mobile;
+  }
+
+  h1,
+  h2,
+  p {
+    max-width: min(100%, 92vw);
+  }
+}
+
+.hero-section {
+  overflow: hidden;
+
+  &::before,
+  &::after {
+    @include mobile {
+      width: min(320px, 48vw);
+      height: min(320px, 48vw);
+    }
+  }
+
+  &::before {
+    @include mobile {
+      top: -40%;
+      right: -18%;
+    }
+  }
+
+  &::after {
+    @include mobile {
+      bottom: -28%;
+      left: -14%;
+    }
+  }
+
+  .hero-title,
+  .hero-subtitle {
+    max-width: min(100%, 92vw);
+  }
+}
+
+.discount-banner,
+.discount-hero-premium__inner,
+.hero-premium__actions,
+.hero-showcase__stage,
+.featured-showcase__container,
+.product-details-page__layout,
+.contact-page__layout,
+.cart-page__layout,
+.dashboard-page__layout,
+.notifications-page__layout {
+  @include tablet-down {
+    grid-template-columns: minmax(0, 1fr) !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+}
+
+.dashboard-panel__toolbar {
+  @include mobile {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.dashboard-panel__actions {
+  @include mobile {
+    width: 100%;
+    justify-content: stretch;
+  }
+}
+
+.dashboard-panel__btn {
+  @include mobile {
+    width: 100%;
+  }
+}
+
+.cart-item {
+  @include mobile {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto;
+  }
+}
+
+.product-card-premium__actions {
+  .MuiButton-root {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+.jerutech-notifications__panel {
+  width: min(100%, 98vw) !important;
+}
+
+.page-container,
+.page-container-narrow,
+.section-padding .container,
+.section-padding .MuiContainer-root {
+  width: 100%;
+  max-width: 100%;
+}

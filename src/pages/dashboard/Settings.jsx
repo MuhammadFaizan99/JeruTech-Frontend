@@ -222,7 +222,7 @@ const Settings = () => {
           type="submit"
           loading={profileSaving}
           disabled={profileDeleting}
-          className="dashboard-panel__submit"
+          className="dashboard-panel__btn dashboard-panel__btn--primary"
         >
           Save Changes
         </LoadingButton>
