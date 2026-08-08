@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import api from "../../api";
 
 const getCompanyLogo = (company) => company?.logo || company?.image || company?.logoUrl || company?.brandLogo || company?.icon || "";
@@ -63,10 +63,10 @@ const BrandMarquee = () => {
         return;
       }
 
-      track.scrollBy({ left: 180, behavior: "smooth" });
+      track.scrollLeft = Math.min(track.scrollLeft + 180, maxScroll);
     };
 
-    autoScrollRef.current = window.setInterval(step, 2200);
+    autoScrollRef.current = window.setInterval(step, 3000);
     return () => window.clearInterval(autoScrollRef.current);
   }, [companies]);
 
@@ -82,16 +82,11 @@ const BrandMarquee = () => {
         track.scrollLeft = 0;
         return;
       }
-      track.scrollBy({ left: 180, behavior: "smooth" });
+      track.scrollLeft = Math.min(track.scrollLeft + 180, maxScroll);
       return;
     }
 
-    if (track.scrollLeft <= 0) {
-      track.scrollLeft = Math.max(maxScroll, 0);
-      return;
-    }
-
-    track.scrollBy({ left: -180, behavior: "smooth" });
+    track.scrollLeft = Math.max(track.scrollLeft - 180, 0);
   };
 
   return (
@@ -126,7 +121,7 @@ const BrandMarquee = () => {
                 return (
                   <span key={`${company?.name || "company"}-${index}`} className="brand-marquee__item">
                     {logo ? (
-                      <img src={logo} alt={company.name} className="brand-marquee__logo" />
+                      <img src={logo} alt={company.name} className="brand-marquee__logo" loading="lazy" />
                     ) : (
                       <span className="brand-marquee__name">{company?.name}</span>
                     )}
@@ -148,4 +143,4 @@ const BrandMarquee = () => {
   );
 };
 
-export default BrandMarquee;
+export default memo(BrandMarquee);

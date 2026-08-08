@@ -1,12 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import {
-  motion,
-  AnimatePresence,
-  useMotionValue,
-  useSpring,
-  useTransform,
-} from "framer-motion";
 import {
   FiChevronLeft,
   FiChevronRight,
@@ -18,35 +11,15 @@ import {
 } from "react-icons/fi";
 import { heroSlides as fallbackHeroSlides } from "../data/slides";
 import ScrollIndicator from "./ScrollIndicator";
-import TextReveal from "./effects/TextReveal";
-import MagneticButton from "./effects/MagneticButton";
 import "../styles/HeroSlider.scss";
 
 const AUTOPLAY_MS = 6000;
 
 const slideIcons = [FiSmartphone, FiMonitor, FiHeadphones, FiTag];
 
-const normalizeSlides = (items = []) =>
-  items.map((item, index) => ({
-    id: item._id || item.id || index + 1,
-    badge: item.badge || "Featured",
-    eyebrow: item.eyebrow || item.category || "Curated Collection",
-    promo: item.promo || item.subtitle || "",
-    title: item.title || "Featured Collection",
-    subtitle: item.subtitle || item.description || "",
-    description: item.description || "Discover our latest collection.",
-    cta: item.ctaText || item.cta || "Shop Now",
-    link: item.ctaLink || item.link || "/products",
-    image: item.image || fallbackHeroSlides[index % fallbackHeroSlides.length]?.image,
-    accent: item.accent || fallbackHeroSlides[index % fallbackHeroSlides.length]?.accent || "cyan",
-    category: item.category || item.title,
-  }));
-
 const HeroSlider = () => {
-  const sectionRef = useRef(null);
   const [slides, setSlides] = useState(fallbackHeroSlides);
   const [current, setCurrent] = useState(0);
-  const [direction, setDirection] = useState(1);
   const [paused, setPaused] = useState(false);
   const [progressKey, setProgressKey] = useState(0);
 
@@ -65,26 +38,16 @@ const HeroSlider = () => {
   const slide = slides[current] || fallbackHeroSlides[0];
   const SlideIcon = slideIcons[current % slideIcons.length] || FiSmartphone;
 
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const springX = useSpring(mouseX, { stiffness: 60, damping: 18 });
-  const springY = useSpring(mouseY, { stiffness: 60, damping: 18 });
-  const parallaxX = useTransform(springX, [-1, 1], [-18, 18]);
-  const parallaxY = useTransform(springY, [-1, 1], [-12, 12]);
-  const productRotateY = useTransform(springX, [-1, 1], [-6, 6]);
-  const productRotateX = useTransform(springY, [-1, 1], [4, -4]);
-
   const goTo = useCallback(
-    (index, dir = 1) => {
-      setDirection(dir);
+    (index) => {
       setCurrent((index + slideCount) % slideCount);
       setProgressKey((k) => k + 1);
     },
     [slideCount]
   );
 
-  const next = useCallback(() => goTo(current + 1, 1), [current, goTo]);
-  const prev = useCallback(() => goTo(current - 1, -1), [current, goTo]);
+  const next = useCallback(() => goTo(current + 1), [current, goTo]);
+  const prev = useCallback(() => goTo(current - 1), [current, goTo]);
 
   useEffect(() => {
     if (paused) return undefined;
@@ -92,50 +55,16 @@ const HeroSlider = () => {
     return () => clearInterval(timer);
   }, [next, paused]);
 
-  const handleMouseMove = (e) => {
-    const rect = sectionRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    mouseX.set((e.clientX - rect.left) / rect.width - 0.5);
-    mouseY.set((e.clientY - rect.top) / rect.height - 0.5);
-  };
-
   const handleMouseLeave = () => {
-    mouseX.set(0);
-    mouseY.set(0);
-  };
-
-  const slideVariants = {
-    enter: (d) => ({
-      opacity: 0,
-      x: d > 0 ? 72 : -72,
-      scale: 0.97,
-      filter: "blur(6px)",
-    }),
-    center: {
-      opacity: 1,
-      x: 0,
-      scale: 1,
-      filter: "blur(0px)",
-    },
-    exit: (d) => ({
-      opacity: 0,
-      x: d > 0 ? -72 : 72,
-      scale: 0.97,
-      filter: "blur(6px)",
-    }),
+    setPaused(false);
   };
 
   return (
     <section
-      ref={sectionRef}
       className={`hero-slider hero-slider--with-scroll hero-slider--accent-${slide.accent}${paused ? " hero-slider--paused" : ""}`}
       aria-label="Featured promotions"
       onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => {
-        setPaused(false);
-        handleMouseLeave();
-      }}
-      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
     >
       <div className="hero-slider__progress" aria-hidden="true">
         <div
@@ -167,59 +96,35 @@ const HeroSlider = () => {
       </div>
 
       <div className="hero-slider__container">
-        <AnimatePresence mode="wait" custom={direction}>
-          <motion.div
-            key={slide.id}
-            className="hero-slider__slide"
-            custom={direction}
-            variants={slideVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <motion.div
-              className="hero-slider__content"
-              style={{ x: parallaxX }}
-            >
-              <div className="hero-slider__content-glass">
-                <span className="hero-slider__badge">
-                  <SlideIcon aria-hidden="true" />
-                  {slide.badge}
-                </span>
-                <span className="hero-slider__eyebrow">{slide.eyebrow}</span>
-                {slide.promo && <span className="hero-slider__promo">{slide.promo}</span>}
-                <h1 className="hero-slider__title">
-                  <TextReveal text={slide.title} as="span" key={slide.id} />
-                </h1>
-                <p className="hero-slider__subtitle">{slide.subtitle}</p>
-                <p className="hero-slider__description">{slide.description}</p>
-                <MagneticButton>
-                  <Link to={slide.link} className="hero-slider__cta">
-                    <span className="hero-slider__cta-shine" aria-hidden="true" />
-                    {slide.cta}
-                    <FiArrowRight aria-hidden="true" />
-                  </Link>
-                </MagneticButton>
-              </div>
-            </motion.div>
+        <div className="hero-slider__slide">
+          <div className="hero-slider__content">
+            <div className="hero-slider__content-glass">
+              <span className="hero-slider__badge">
+                <SlideIcon aria-hidden="true" />
+                {slide.badge}
+              </span>
+              <span className="hero-slider__eyebrow">{slide.eyebrow}</span>
+              {slide.promo && <span className="hero-slider__promo">{slide.promo}</span>}
+              <h1 className="hero-slider__title">{slide.title}</h1>
+              <p className="hero-slider__subtitle">{slide.subtitle}</p>
+              <p className="hero-slider__description">{slide.description}</p>
+              <Link to={slide.link} className="hero-slider__cta">
+                <span className="hero-slider__cta-shine" aria-hidden="true" />
+                {slide.cta}
+                <FiArrowRight aria-hidden="true" />
+              </Link>
+            </div>
+          </div>
 
-            <motion.div
-              className="hero-slider__visual"
-              style={{ x: parallaxX, y: parallaxY }}
-            >
-              <div className="hero-slider__visual-glow" aria-hidden="true" />
-              <motion.div
-                className="hero-slider__product"
-                style={{ rotateY: productRotateY, rotateX: productRotateX }}
-              >
-                <div className="hero-slider__product-frame">
-                  <img src={slide.image} alt={slide.title} />
-                </div>
-              </motion.div>
-            </motion.div>
-          </motion.div>
-        </AnimatePresence>
+          <div className="hero-slider__visual">
+            <div className="hero-slider__visual-glow" aria-hidden="true" />
+            <div className="hero-slider__product">
+              <div className="hero-slider__product-frame">
+                <img src={slide.image} alt={slide.title} loading="lazy" />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="hero-slider__controls">

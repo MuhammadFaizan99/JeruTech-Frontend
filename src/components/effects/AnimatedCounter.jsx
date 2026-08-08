@@ -1,13 +1,9 @@
-import { useEffect, useState, useRef } from "react";
-import { useInView } from "framer-motion";
+import { useEffect, useState } from "react";
 
 const AnimatedCounter = ({ end, suffix = "", duration = 2, prefix = "" }) => {
   const [count, setCount] = useState(0);
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.5 });
 
   useEffect(() => {
-    if (!isInView) return;
     let start = 0;
     const step = end / (duration * 60);
     const timer = setInterval(() => {
@@ -20,10 +16,10 @@ const AnimatedCounter = ({ end, suffix = "", duration = 2, prefix = "" }) => {
       }
     }, 1000 / 60);
     return () => clearInterval(timer);
-  }, [isInView, end, duration]);
+  }, [end, duration]);
 
   return (
-    <span ref={ref} className="animated-counter">
+    <span className="animated-counter">
       {prefix}
       {count}
       {suffix}

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import {
   Card,
   CardContent,
@@ -26,8 +25,6 @@ import {
   showWarningToast,
   showErrorToast,
 } from "../utils/toast";
-import TiltCard from "./effects/TiltCard";
-import MagneticButton from "./effects/MagneticButton";
 import "../styles/ProductCard.scss";
 
 const ProductCard = ({ product, discounted = false }) => {
@@ -148,14 +145,8 @@ const ProductCard = ({ product, discounted = false }) => {
         : null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.4 }}
-      style={{ height: "100%" }}
-    >
-      <TiltCard maxTilt={6}>
+    <div style={{ height: "100%" }}>
+      <div>
         <Card
           className={`product-card-premium${discounted ? " product-card-premium--deal" : ""}`}
         >
@@ -254,7 +245,6 @@ const ProductCard = ({ product, discounted = false }) => {
             )}
 
             <Box className="product-card-premium__btn-row">
-              <MagneticButton>
                 <Button
                   component={Link}
                   to={`/product/${product.id}`}
@@ -265,8 +255,6 @@ const ProductCard = ({ product, discounted = false }) => {
                 >
                   View Details
                 </Button>
-              </MagneticButton>
-              <MagneticButton>
                 <Button
                   variant="contained"
                   size="small"
@@ -283,12 +271,11 @@ const ProductCard = ({ product, discounted = false }) => {
                         ? "Already in Cart"
                         : "Add to Cart"}
                 </Button>
-              </MagneticButton>
             </Box>
           </CardContent>
         </Card>
-      </TiltCard>
-    </motion.div>
+      </div>
+    </div>
   );
 };
 

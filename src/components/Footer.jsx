@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import api from "../api";
-import { motion } from "framer-motion";
 import {
   FiShield,
   FiHeadphones,
@@ -71,28 +70,12 @@ const legalLinks = [
   { label: "Cookie Policy", path: "/cookie-policy" },
 ];
 
-const columnVariants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: (i) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] },
-  }),
-};
-
-const FooterColumn = ({ title, children, index }) => (
-  <motion.div
-    className="jerutech-footer__col"
-    custom={index}
-    initial="hidden"
-    whileInView="visible"
-    viewport={{ once: true, amount: 0.2 }}
-    variants={columnVariants}
-  >
+const FooterColumn = memo(({ title, children }) => (
+  <div className="jerutech-footer__col">
     <h3 className="jerutech-footer__title">{title}</h3>
     {children}
-  </motion.div>
-);
+  </div>
+));
 
 const Footer = () => {
   const location = useLocation();
@@ -158,19 +141,12 @@ const Footer = () => {
 
         <div className="jerutech-footer__container">
           <div className="jerutech-footer__grid">
-            <motion.div
-              className="jerutech-footer__brand"
-              custom={0}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
-              variants={columnVariants}
-            >
+            <div className="jerutech-footer__brand">
               <div className="jerutech-footer__logo-glow" aria-hidden="true" />
               <Link to="/" className="jerutech-footer__logo">
-  <img src={logo} alt="JeruTech Logo" className="jerutech-footer__logo-img" />
-  <span className="jerutech-footer__logo-text">JeruTech</span>
-</Link>
+                <img src={logo} alt="JeruTech Logo" className="jerutech-footer__logo-img" loading="lazy" />
+                <span className="jerutech-footer__logo-text">JeruTech</span>
+              </Link>
               <p className="jerutech-footer__desc">
                 JeruTech brings mobiles, laptops, accessories, and electronic devices
                 together in one trusted digital marketplace.
@@ -198,7 +174,7 @@ const Footer = () => {
                   </a>
                 ))}
               </div>
-            </motion.div>
+            </div>
 
             <FooterColumn title="Quick Links" index={1}>
               <ul className="jerutech-footer__links">
@@ -261,13 +237,7 @@ const Footer = () => {
             </FooterColumn>
           </div>
 
-          <motion.div
-            className="jerutech-footer__newsletter"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.3 }}
-            transition={{ duration: 0.55, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-          >
+          <div className="jerutech-footer__newsletter">
             <div className="jerutech-footer__newsletter-content">
               <div className="jerutech-footer__newsletter-text">
                 <span className="jerutech-footer__newsletter-eyebrow">
@@ -292,7 +262,7 @@ const Footer = () => {
                 </button>
               </form>
             </div>
-          </motion.div>
+          </div>
         </div>
 
         <div className="jerutech-footer__bottom">
@@ -321,4 +291,4 @@ const Footer = () => {
   );
 };
 
-export default Footer;
+export default memo(Footer);

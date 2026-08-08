@@ -1,40 +1,38 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { useAppDispatch } from "./redux/hooks";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
-import { AnimatePresence } from "framer-motion";
-import AOS from "aos";
-import "aos/dist/aos.css";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import PageBackground from "./components/effects/PageBackground";
-import PageTransition from "./components/effects/PageTransition";
 import LoadingScreen from "./components/effects/LoadingScreen";
-import PremiumShell from "./components/effects/PremiumShell";
-import NotificationProvider from "./components/NotificationProvider";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Home from "./pages/Home";
-import Products from "./pages/Products";
-import Discount from "./pages/Discount";
-import Learn from "./pages/Learn";
-import BlogDetails from "./pages/BlogDetails";
-import Contact from "./pages/Contact";
-import Cart from "./pages/Cart";
-import ContactSupportPage from "./pages/ContactSupportPage";
-import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
-import TermsAndConditionsPage from "./pages/TermsAndConditionsPage";
-import CookiePolicyPage from "./pages/CookiePolicyPage";
-import ProductDetails from "./pages/ProductDetails";
-import SignIn from "./pages/SignIn";
-import SignUp from "./pages/SignUp";
-import AdminSignIn from "./pages/AdminSignIn";
-import AdminDashboard from "./pages/AdminDashboard";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
-import Dashboard from "./pages/Dashboard";
 import { useAppSelector } from "./redux/hooks";
 import { fetchCart, fetchCheckoutSettings, resetCart } from "./redux/slices/cartSlice";
 import { fetchMyWallet, resetWalletState } from "./redux/slices/walletSlice";
 import "./styles/main.scss";
+
+const PageBackground = lazy(() => import("./components/effects/PageBackground"));
+const PremiumShell = lazy(() => import("./components/effects/PremiumShell"));
+const Navbar = lazy(() => import("./components/Navbar"));
+const Footer = lazy(() => import("./components/Footer"));
+const NotificationProvider = lazy(() => import("./components/NotificationProvider"));
+
+const Home = lazy(() => import("./pages/Home"));
+const Products = lazy(() => import("./pages/Products"));
+const Discount = lazy(() => import("./pages/Discount"));
+const Learn = lazy(() => import("./pages/Learn"));
+const BlogDetails = lazy(() => import("./pages/BlogDetails"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Cart = lazy(() => import("./pages/Cart"));
+const ContactSupportPage = lazy(() => import("./pages/ContactSupportPage"));
+const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
+const TermsAndConditionsPage = lazy(() => import("./pages/TermsAndConditionsPage"));
+const CookiePolicyPage = lazy(() => import("./pages/CookiePolicyPage"));
+const ProductDetails = lazy(() => import("./pages/ProductDetails"));
+const SignIn = lazy(() => import("./pages/SignIn"));
+const SignUp = lazy(() => import("./pages/SignUp"));
+const AdminSignIn = lazy(() => import("./pages/AdminSignIn"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
 
 const theme = createTheme({
   palette: {
@@ -50,176 +48,58 @@ const theme = createTheme({
 
 const AnimatedRoutes = () => {
   const location = useLocation();
-  const routeKey = location.pathname.startsWith("/dashboard")
-    ? "/dashboard"
-    : location.pathname;
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [routeKey]);
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={routeKey}>
-        <Route
-          path="/"
-          element={
-            <PageTransition>
-              <Home />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/products"
-          element={
-            <PageTransition>
-              <Products />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/discount"
-          element={
-            <PageTransition>
-              <Discount />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/learn"
-          element={
-            <PageTransition>
-              <Learn />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/blogs/:slug"
-          element={
-            <PageTransition>
-              <BlogDetails />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/contact"
-          element={
-            <PageTransition>
-              <Contact />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/contact-support"
-          element={
-            <PageTransition>
-              <ContactSupportPage />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/privacy-policy"
-          element={
-            <PageTransition>
-              <PrivacyPolicyPage />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/terms-and-conditions"
-          element={
-            <PageTransition>
-              <TermsAndConditionsPage />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/cookie-policy"
-          element={
-            <PageTransition>
-              <CookiePolicyPage />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/cart"
-          element={
-            <ProtectedRoute>
-              <PageTransition>
-                <Cart />
-              </PageTransition>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/product/:id"
-          element={
-            <PageTransition>
-              <ProductDetails />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/admin/signin"
-          element={
-            <PageTransition>
-              <AdminSignIn />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/admin/*"
-          element={
-            <AdminProtectedRoute>
-              <PageTransition>
-                <AdminDashboard />
-              </PageTransition>
-            </AdminProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard/*"
-          element={
-            <ProtectedRoute>
-              <PageTransition>
-                <Dashboard />
-              </PageTransition>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/signin"
-          element={
-            <PageTransition>
-              <SignIn />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            <PageTransition>
-              <SignUp />
-            </PageTransition>
-          }
-        />
-      </Routes>
-    </AnimatePresence>
+    <Routes location={location}>
+      <Route path="/" element={<Home />} />
+      <Route path="/products" element={<Products />} />
+      <Route path="/discount" element={<Discount />} />
+      <Route path="/learn" element={<Learn />} />
+      <Route path="/blogs/:slug" element={<BlogDetails />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/contact-support" element={<ContactSupportPage />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+      <Route path="/terms-and-conditions" element={<TermsAndConditionsPage />} />
+      <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+      <Route
+        path="/cart"
+        element={
+          <ProtectedRoute>
+            <Cart />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/product/:id" element={<ProductDetails />} />
+      <Route path="/admin/signin" element={<AdminSignIn />} />
+      <Route
+        path="/admin/*"
+        element={
+          <AdminProtectedRoute>
+            <AdminDashboard />
+          </AdminProtectedRoute>
+        }
+      />
+      <Route
+        path="/dashboard/*"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/signin" element={<SignIn />} />
+      <Route path="/signup" element={<SignUp />} />
+    </Routes>
   );
 };
 
 function App() {
   const dispatch = useAppDispatch();
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
-
-  useEffect(() => {
-    AOS.init({
-      duration: 700,
-      easing: "ease-out-cubic",
-      once: true,
-      offset: 60,
-    });
-  }, []);
 
   useEffect(() => {
     dispatch(fetchCheckoutSettings());
@@ -242,15 +122,27 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <LoadingScreen />
-      <NotificationProvider />
+      <Suspense fallback={null}>
+        <NotificationProvider />
+      </Suspense>
       <Router>
-        <PageBackground />
-        <PremiumShell />
-        <Navbar />
+        <Suspense fallback={null}>
+          <PageBackground />
+        </Suspense>
+        <Suspense fallback={null}>
+          <PremiumShell />
+        </Suspense>
+        <Suspense fallback={null}>
+          <Navbar />
+        </Suspense>
         <main className="app-content">
-          <AnimatedRoutes />
+          <Suspense fallback={<div className="route-fallback" aria-hidden="true" />}>
+            <AnimatedRoutes />
+          </Suspense>
         </main>
-        <Footer />
+        <Suspense fallback={null}>
+          <Footer />
+        </Suspense>
       </Router>
     </ThemeProvider>
   );

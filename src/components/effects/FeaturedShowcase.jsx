@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { useAppSelector } from "../../redux/hooks";
 import { formatPrice } from "../../utils/productHelpers";
 import ScrollReveal from "./ScrollReveal";
-import MagneticButton from "./MagneticButton";
 
 const FeaturedShowcase = () => {
   const products = useAppSelector((state) => state.product.products);
@@ -34,11 +33,9 @@ const FeaturedShowcase = () => {
                   <h3>{product.name}</h3>
                   <p>{product.description}</p>
                   <div className="featured-showcase__price">{formatPrice(product.price)}</div>
-                  <MagneticButton>
-                    <Link to={`/product/${product.id}`} className="featured-showcase__cta">
-                      Explore Product
-                    </Link>
-                  </MagneticButton>
+                  <Link to={`/product/${product.id}`} className="featured-showcase__cta">
+                    Explore Product
+                  </Link>
                 </div>
               </article>
             </ScrollReveal>

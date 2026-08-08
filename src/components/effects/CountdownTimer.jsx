@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 
 const getTimeLeft = (endDate) => {
   const diff = Math.max(0, endDate - Date.now());
@@ -29,25 +28,13 @@ const CountdownTimer = () => {
 
   return (
     <div className="countdown-timer">
-      {units.map((unit, i) => (
-        <motion.div
-          key={unit.label}
-          className="countdown-unit"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: i * 0.1 }}
-        >
-          <motion.span
-            key={unit.value}
-            className="countdown-value"
-            initial={{ scale: 1.2, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
+      {units.map((unit) => (
+        <div key={unit.label} className="countdown-unit">
+          <span className="countdown-value">
             {String(unit.value).padStart(2, "0")}
-          </motion.span>
+          </span>
           <span className="countdown-label">{unit.label}</span>
-        </motion.div>
+        </div>
       ))}
     </div>
   );

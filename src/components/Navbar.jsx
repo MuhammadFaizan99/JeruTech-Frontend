@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import Drawer from "@mui/material/Drawer";
 import { HiMenuAlt3, HiX } from "react-icons/hi";
 import { FiShoppingCart, FiLayout, FiBell } from "react-icons/fi";
@@ -272,16 +271,11 @@ const Navbar = () => {
           </button>
         </div>
 
-        <AnimatePresence>
-          {mobileOpen && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <div className="mobile-drawer__actions">
-                {isAuthenticated && (
-                  <>
+        {mobileOpen && (
+          <div className="mobile-drawer__content">
+            <div className="mobile-drawer__actions">
+              {isAuthenticated && (
+                <>
                     <button
                       type="button"
                       className="mobile-drawer__dashboard-link"
@@ -324,13 +318,8 @@ const Navbar = () => {
                 />
               </div>
 
-              {navLinks.map((link, i) => (
-                <motion.div
-                  key={link.path}
-                  initial={{ opacity: 0, x: 24 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                >
+              {navLinks.map((link) => (
+                <div key={link.path} className="mobile-drawer__link-wrap">
                   <NavLink
                     to={link.path}
                     className={({ isActive }) =>
@@ -340,7 +329,7 @@ const Navbar = () => {
                   >
                     {link.label}
                   </NavLink>
-                </motion.div>
+                </div>
               ))}
 
               {!isAuthenticated && (
@@ -362,9 +351,8 @@ const Navbar = () => {
                   </Link>
                 </div>
               )}
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
       </Drawer>
     </header>
   );

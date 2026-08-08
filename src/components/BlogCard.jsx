@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { memo } from "react";
 import {
   Card,
   CardMedia,
@@ -8,7 +8,6 @@ import {
   Box,
 } from "@mui/material";
 import { FiArrowRight, FiClock } from "react-icons/fi";
-import TiltCard from "./effects/TiltCard";
 
 const tagClassMap = {
   AI: "blog-tag--ai",
@@ -22,7 +21,7 @@ const BlogTag = ({ tag }) => (
   <span className={`blog-tag ${tagClassMap[tag] || "blog-tag--default"}`}>{tag}</span>
 );
 
-const BlogCard = ({ blog, index = 0, featured = false, onReadMore }) => {
+const BlogCard = ({ blog, featured = false, onReadMore }) => {
   const handleReadMore = () => {
     if (onReadMore) {
       onReadMore();
@@ -36,17 +35,9 @@ const BlogCard = ({ blog, index = 0, featured = false, onReadMore }) => {
 
   if (featured) {
     return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        onClick={handleReadMore}
-        style={{ cursor: "pointer", height: "100%" }}
-      >
-        <TiltCard maxTilt={4}>
-          <div className="blog-featured glass-panel">
-            <img src={blog.image} alt={blog.title} className="blog-featured__img" />
+      <div onClick={handleReadMore} style={{ cursor: "pointer", height: "100%" }}>
+        <div className="blog-featured glass-panel">
+            <img src={blog.image} alt={blog.title} className="blog-featured__img" loading="lazy" />
             <span className="blog-read-badge">
               <FiClock size={12} />
               {blog.readTime}
@@ -72,20 +63,13 @@ const BlogCard = ({ blog, index = 0, featured = false, onReadMore }) => {
               </Typography>
             </div>
           </div>
-        </TiltCard>
-      </motion.div>
+      </div>
     );
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.15 }}
-      transition={{ delay: index * 0.08, duration: 0.45 }}
-      style={{ height: "100%" }}
-    >
-      <TiltCard maxTilt={5}>
+    <div style={{ height: "100%" }}>
+      <div>
         <Card
           className="blog-card-premium glass-panel"
           sx={{ height: "100%", display: "flex", flexDirection: "column" }}
@@ -95,6 +79,7 @@ const BlogCard = ({ blog, index = 0, featured = false, onReadMore }) => {
               component="img"
               height="200"
               image={blog.image}
+              loading="lazy"
               alt={blog.title}
               className="blog-card-premium__img"
               sx={{ objectFit: "cover" }}
@@ -151,9 +136,9 @@ const BlogCard = ({ blog, index = 0, featured = false, onReadMore }) => {
             </Button>
           </CardContent>
         </Card>
-      </TiltCard>
-    </motion.div>
+      </div>
+    </div>
   );
 };
 
-export default BlogCard;
+export default memo(BlogCard);

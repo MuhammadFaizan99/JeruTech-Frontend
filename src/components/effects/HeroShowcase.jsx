@@ -1,4 +1,3 @@
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useRef } from "react";
 import {
   FiSmartphone,
@@ -40,52 +39,17 @@ const floatingItems = [
 
 const HeroShowcase = () => {
   const ref = useRef(null);
-  const mx = useMotionValue(0);
-  const my = useMotionValue(0);
-  const springX = useSpring(mx, { stiffness: 80, damping: 20 });
-  const springY = useSpring(my, { stiffness: 80, damping: 20 });
-  const rotateX = useTransform(springY, [-0.5, 0.5], [8, -8]);
-  const rotateY = useTransform(springX, [-0.5, 0.5], [-8, 8]);
-
-  const handleMove = (e) => {
-    const rect = ref.current?.getBoundingClientRect();
-    if (!rect) return;
-    mx.set((e.clientX - rect.left) / rect.width - 0.5);
-    my.set((e.clientY - rect.top) / rect.height - 0.5);
-  };
 
   return (
-    <div
-      ref={ref}
-      className="hero-showcase"
-      onMouseMove={handleMove}
-      onMouseLeave={() => {
-        mx.set(0);
-        my.set(0);
-      }}
-    >
-      <motion.div
-        className="hero-showcase__stage"
-        style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      >
+    <div className="hero-showcase">
+      <div className="hero-showcase__stage">
         <div className="hero-showcase__glow-ring" />
         <div className="hero-showcase__center-glow" />
 
-        {floatingItems.map((item, i) => {
+        {floatingItems.map((item) => {
           const Icon = item.icon;
           return (
-            <motion.div
-              key={item.label}
-              className={`hero-float ${item.className}`}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1, y: [0, -12, 0] }}
-              transition={{
-                opacity: { delay: item.delay, duration: 0.5 },
-                scale: { delay: item.delay, duration: 0.5 },
-                y: { delay: item.delay + 0.5, duration: 4 + i, repeat: Infinity, ease: "easeInOut" },
-              }}
-              whileHover={{ scale: 1.08, zIndex: 10 }}
-            >
+            <div key={item.label} className={`hero-float ${item.className}`}>
               <div className="hero-float__glass">
                 <img src={item.img} alt={item.label} />
                 <span className="hero-float__badge">
@@ -93,10 +57,10 @@ const HeroShowcase = () => {
                   {item.label}
                 </span>
               </div>
-            </motion.div>
+            </div>
           );
         })}
-      </motion.div>
+      </div>
     </div>
   );
 };
